@@ -4,8 +4,6 @@ excerpt: "Short description of portfolio item number 1<br/><img src='/images/500
 collection: portfolio
 ---
 
-
-
 The "CZII - CryoET Object Identification" competition on Kaggle challenges participants to identify small biological structures within large 3D volumes obtained through cryo-electron tomography (Cryo-ET). This report shows the solution implemented with a 3D-Unet and 2D object detection model for multi-class segmentation, the results obtained show that both approaches achieve accuracy in more than 50\
 
 # Introduction
@@ -15,7 +13,7 @@ Chan Zuckerberg Initiative and its primary objective is to acquire more knowledg
 
 Cryo-electron tomography opens the door to the study of the structure of unique objects, such as cell structures and even entire cells \cite{stewart2017cryo}. To do this, multiple images of the sample are taken at different inclinations within the microscope (generally from -70º to 70º), which are subsequently processed using specialized programs to reconstruct its three-dimensional structure, as seen in the figure. The available dataset provided in the competition contains already classified and denoised images of tomographs, the classification includes six particle types with varying prediction difficulty: apo-ferritin (easy), beta-amylase (not scored, impossible), beta-galactosidase (hard), ribosome (easy), thyroglobulin (hard), and virus-like-particle (easy), with beta-amylase excluded from scoring due to its evaluation challenges.
 
-![Cryo-electron tomography (cryoET)](../images/portfolio/p1-ap1.png)
+![Cryo-electron tomography (cryoET)](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap1.png)
 
 # Methodology
 
@@ -23,7 +21,7 @@ Cryo-electron tomography opens the door to the study of the structure of unique 
 
 The dataset consists of 7 cryo-electron tomography (cryoET) images, represented as 3D tomograms where each voxel corresponds to a 10x10x10 nm cube, as seen in the Figure. Each tomogram contains various objects of interest, whose locations are provided as centroid coordinates in associated files. Objects include ribosomes, virus-like particles, apo-ferritin, thyroglobulin, and B-galactosidase, with radius ranging from 6 to 15 voxels. The challenge allows a voxel-level labeling to be considered correct if it falls within half the particle's radius from the actual centroid. There are associated files to each tomogram containing x, y, z coordinates of object centroids.
 
-![Voxel Segmentation](../images/portfolio/p1-ap2.png)
+![Voxel Segmentation](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap2.png)
 
 Synthetic data has been used to train models to detect these objects. This data is generated with realistic characteristics mimicking the tomograms, serving as a proxy for real-world samples, especially when annotated real tomograms are limited.
 
@@ -54,7 +52,9 @@ Several studies have applied YOLO in detection tasks from medical images: such a
 
 The Python programming language and PyTorch machine learning frameworks were used. Additionally, tools and libraries such as YOLOv5 from Ultralytics were employed to facilitate model training and object detection. The YOLO architecture was implemented using a pre-trained model (YOLO11), which incorporates recent advancements in object detection and data augmentation. Data pre-processing and augmentation included techniques like rotation, shear, flipping, and mix-up during training. The development and training process used a machine equipped with an NVIDIA L4 GPU (22.5 GB GDDR6), providing the computational power necessary to efficiently train the model + 235 GB HDD storage.
 
-The latest YOLO11 model architecture, as shown in Appendix \ref{app3}, is composed by three main parts:
+The latest YOLO11 model architecture, as shown in following figure, is composed by three main parts:
+
+![YOLO11 Pre-Trained Model Architecture](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap3.png)
 
 * Backbone: Is the deep learning architecture that acts as a feature extractor.
 * Neck: Combines the features acquired from the various layers of the backbone model.
@@ -86,7 +86,7 @@ Where:
 * A is the predicted segmentation
 * B is the ground truth segmentation.
 
-![Validation Score Performance during training phase](../images/portfolio/p1-1.png)
+![Validation Score Performance during training phase](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-1.png)
 
 The model performs well while training with the validation score increasing.\\  And as for the loss function used in 3D U-Net model is the Tversky Loss, which is particularly suited for imbalanced segmentation tasks, especially when one class significantly dominates the others.
 
@@ -104,7 +104,7 @@ Where:
 
 In this equation if $\alpha = $\beta = 0.5, this loss is equivalent to the Dice Loss.
 
-![Loss Performance during training phase](../images/portfolio/p1-2.png)
+![Loss Performance during training phase](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-2.png)
 
 The model's loss initially decreases well at first but then struggles to improves from around epoch 50.
 
