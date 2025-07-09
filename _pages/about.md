@@ -17,4 +17,3 @@ redirect_from:
 🔧 I currently work as a Technical Consultant at Herzum, where I support cloud migrations and contribute to the design of LLM-powered tools and chatbots.
 
 🚀 I enjoy challenging problems, whether it’s fine-tuning neural networks or adapting deep learning models to specific tasks. I'm always curious and eager to keep learning.
-
