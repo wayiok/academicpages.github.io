@@ -13,13 +13,17 @@ The "CZII - CryoET Object Identification" competition on Kaggle challenges parti
 The CryoET Object Identification challenge is funded by the
 Chan Zuckerberg Initiative and its primary objective is to acquire more knowledge about protein complexes for cellular function, which are essential for disease treatments. The available data obtained from tomographs are often available in a standardized format, and the analysis of this specific information is challenging when identifying the types of protein complexes within these images. 
 
-Cryo-electron tomography opens the door to the study of the structure of unique objects, such as cell structures and even entire cells \cite{stewart2017cryo}. To do this, multiple images of the sample are taken at different inclinations within the microscope (generally from -70º to 70º), which are subsequently processed using specialized programs to reconstruct its three-dimensional structure, as seen in Appendix \ref{appendix:tab1}. The available dataset provided in the competition contains already classified and denoised images of tomographs, the classification includes six particle types with varying prediction difficulty: apo-ferritin (easy), beta-amylase (not scored, impossible), beta-galactosidase (hard), ribosome (easy), thyroglobulin (hard), and virus-like-particle (easy), with beta-amylase excluded from scoring due to its evaluation challenges.
+Cryo-electron tomography opens the door to the study of the structure of unique objects, such as cell structures and even entire cells \cite{stewart2017cryo}. To do this, multiple images of the sample are taken at different inclinations within the microscope (generally from -70º to 70º), which are subsequently processed using specialized programs to reconstruct its three-dimensional structure, as seen in the figure. The available dataset provided in the competition contains already classified and denoised images of tomographs, the classification includes six particle types with varying prediction difficulty: apo-ferritin (easy), beta-amylase (not scored, impossible), beta-galactosidase (hard), ribosome (easy), thyroglobulin (hard), and virus-like-particle (easy), with beta-amylase excluded from scoring due to its evaluation challenges.
+
+![Cryo-electron tomography (cryoET)](../images/portfolio/p1-ap1.png)
 
 # Methodology
 
 ## Dataset
 
-The dataset consists of 7 cryo-electron tomography (cryoET) images, represented as 3D tomograms where each voxel corresponds to a 10x10x10 nm cube, as seen in Appendix \ref{apvox}. Each tomogram contains various objects of interest, whose locations are provided as centroid coordinates in associated files. Objects include ribosomes, virus-like particles, apo-ferritin, thyroglobulin, and B-galactosidase, with radius ranging from 6 to 15 voxels. The challenge allows a voxel-level labeling to be considered correct if it falls within half the particle's radius from the actual centroid. There are associated files to each tomogram containing x, y, z coordinates of object centroids.
+The dataset consists of 7 cryo-electron tomography (cryoET) images, represented as 3D tomograms where each voxel corresponds to a 10x10x10 nm cube, as seen in the Figure. Each tomogram contains various objects of interest, whose locations are provided as centroid coordinates in associated files. Objects include ribosomes, virus-like particles, apo-ferritin, thyroglobulin, and B-galactosidase, with radius ranging from 6 to 15 voxels. The challenge allows a voxel-level labeling to be considered correct if it falls within half the particle's radius from the actual centroid. There are associated files to each tomogram containing x, y, z coordinates of object centroids.
+
+![Voxel Segmentation](../images/portfolio/p1-ap2.png)
 
 Synthetic data has been used to train models to detect these objects. This data is generated with realistic characteristics mimicking the tomograms, serving as a proxy for real-world samples, especially when annotated real tomograms are limited.
 
@@ -77,8 +81,50 @@ $$
 Dice~Score = \frac{2|A \cap B|}{|A| + |B|}
 $$
 
+Where:
 
+* A is the predicted segmentation
+* B is the ground truth segmentation.
 
+![Validation Score Performance during training phase](../images/portfolio/p1-1.png)
 
+The model performs well while training with the validation score increasing.\\  And as for the loss function used in 3D U-Net model is the Tversky Loss, which is particularly suited for imbalanced segmentation tasks, especially when one class significantly dominates the others.
+
+The Tversky Loss is a generalization of the Dice Loss and is defined as:
+
+$$
+\mathcal{L}_{\text{Tversky}} = 1 - \frac{TP}{TP + \alpha \cdot FP + \beta \cdot FN}
+$$
+
+Where:
+- \( TP \) = True Positives
+- \( FP \) = False Positives
+- \( FN \) = False Negatives
+- \( $\alpha, $\beta \) are weights controlling the penalty for FP and FN respectively.
+
+In this equation if $\alpha = $\beta = 0.5, this loss is equivalent to the Dice Loss.
+
+![Loss Performance during training phase](../images/portfolio/p1-2.png)
+
+The model's loss initially decreases well at first but then struggles to improves from around epoch 50.
+
+### YOLO 
+
+The training configuration includes the following parameters and optimization techniques: 
+
+* Epochs: The model is trained for 100 full passes through the dataset.
+* Warm-up Epochs: Gradual increase in the learning rate over the first 10 epochs.
+* Batch Size: The number of samples processed in one training step is 32.
+* Image Size: Input images are resized to 640 x 640 pixels.
+* Data Augmentation: 
+  * Rotation: Up to ±45 degrees.
+  * Shear: Up to 5 degrees.
+  * Horizontal and Vertical Flipping: Probabilities of 0.5 for both.
+  * Mixup: A data augmentation technique that blends two training images.
+  * Copy-Paste: Augmentation by combining regions from different images.
+* Optimizer: AdamW
+* Seed: 8620 – Used for reproducibility.
+* Initial Learning Rate: 0.0003
+* 
 
 
