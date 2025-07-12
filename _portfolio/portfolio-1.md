@@ -1,7 +1,7 @@
 ---
 title: "Cryo-electron Tomography  Object Identification"
 excerpt: "
-This project addresses the challenge of identifying and analyzing microscopic biological structures using Cryo-electron Tomography (Cryo-ET). It applies deep learning methods to both 3D image segmentation and 2D object detection, offering a dual approach to enhance structural biology research. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/images/portfolio/p1.png'>"
+This project addresses the challenge of identifying and analyzing microscopic biological structures using Cryo-electron Tomography (Cryo-ET). It applies deep learning methods to both 3D image segmentation and 2D object detection, offering a dual approach to enhance structural biology research. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p1.png'>"
 collection: portfolio
 ---
 

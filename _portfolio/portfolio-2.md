@@ -1,7 +1,7 @@
 ---
 title: "Product Re-purchase Prediction:"
 excerpt: "
-Developed a recommendation system for Carrefour to predict customer repurchases using transaction history and product metadata. Achieved a top hit rate of 35.6% with a weighted frequency-recency-quantity scoring method. Enhanced predictions with BERT-based product embeddings, feature engineering, and deep learning models including FNN, LSTM, and CASER. Presented as part of ICML 2024. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/images/portfolio/p2.png'>"
+Developed a recommendation system for Carrefour to predict customer repurchases using transaction history and product metadata. Achieved a top hit rate of 35.6% with a weighted frequency-recency-quantity scoring method. Enhanced predictions with BERT-based product embeddings, feature engineering, and deep learning models including FNN, LSTM, and CASER. Presented as part of ICML 2024. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p2.png'>"
 collection: portfolio
 ---
 
