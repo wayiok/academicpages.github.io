@@ -8,11 +8,9 @@ redirect_from:
 ---
 
 
-👋🏼 Hello there, I'm Cesar!
+💻 I hold a Master's degree in Machine Learning and Data Mining from Université Jean Monnet in France. During my studies, I also spent a semester at the University of Freiburg in Germany through the Erasmus program.
 
-💻 I'm a Machine Learning and Data Mining master's student at Université Jean Monnet in France, currently finishing my final year. I also spent a semester at the University of Freiburg in Germany through the Erasmus program.
-
-🧠 My passions lie in data analysis, knowledge retrieval, and machine learning. I'm especially interested in applying Large Language Models (LLMs) for real-world solutions and building optimized pipelines for generative AI systems.
+🧠 My passions lies in data analysis, knowledge retrieval, and machine learning. I'm especially interested in applying Large Language Models (LLMs) for real-world solutions and building optimized pipelines for generative AI systems.
 
 🔧 I currently work as a Technical Consultant at Herzum, where I support cloud migrations and contribute to the design of LLM-powered tools and chatbots.
 

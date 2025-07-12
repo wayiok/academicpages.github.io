@@ -1,7 +1,7 @@
 ---
-title: "Cryo-electron Tomography  Object Identification"
+title: "Product Re-purchase Prediction:"
 excerpt: "
-This project addresses the challenge of identifying and analyzing microscopic biological structures using Cryo-electron Tomography (Cryo-ET). It applies deep learning methods to both 3D image segmentation and 2D object detection, offering a dual approach to enhance structural biology research. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/images/portfolio/p1.png'>"
+Developed a recommendation system for Carrefour to predict customer repurchases using transaction history and product metadata. Achieved a top hit rate of 35.6% with a weighted frequency-recency-quantity scoring method. Enhanced predictions with BERT-based product embeddings, feature engineering, and deep learning models including FNN, LSTM, and CASER. Presented as part of ICML 2024. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/images/portfolio/p2.png'>"
 collection: portfolio
 ---
 
