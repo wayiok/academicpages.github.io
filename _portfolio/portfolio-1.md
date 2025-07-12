@@ -125,6 +125,162 @@ The training configuration includes the following parameters and optimization te
 * Optimizer: AdamW
 * Seed: 8620 – Used for reproducibility.
 * Initial Learning Rate: 0.0003
-* 
 
+Losses in the following figure are divided in three terms that define the overall loss function used in object detection models like YOLO11. The total loss function for object detection is given by:
 
+$$
+\text{Loss} = \alpha \cdot \text{DFL Loss} + \beta \cdot \text{CLS Loss} + \gamma \cdot \text{BOX Loss}
+$$
+
+Where:
+* $\alpha : Weight for the Distribution Focal Loss (DFL Loss),
+* $\betha : Weight for the Classification Loss (CLS Loss),
+* $\gamma : Weight for the Bounding Box Loss (BOX Loss).
+
+The total loss can be calculated programmatically as:
+
+$$
+\text{Total Loss} = \alpha \cdot dfl + \beta \cdot cls + \gamma \cdot box
+$$
+
+![YOLO Training Losses Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-3.png)
+
+# Experimental evaluation setup
+
+## 3D U-Net
+
+During evaluation phase on the test dataset, we follow the official metric score of the Kaggle competition which focuses on precision, recall, and F-beta score.
+
+1. **Precision**: Measures the proportion of correctly predicted objects (hits) among all predicted objects.  
+   $$
+   \text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}
+   $$
+
+2. **Recall**: Measures the proportion of correctly predicted objects among all ground-truth objects.  
+   $$
+   \text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}
+   $$
+
+3. **F-beta Score**: A weighted harmonic mean of precision and recall, emphasizing recall (with \( \beta = 4 \)):  
+   $$
+   F_{\beta} = \frac{(1+\beta^2) \cdot \text{Precision} \cdot \text{Recall}}{(\beta^2 \cdot \text{Precision}) + \text{Recall}}
+   $$
+   In this case, \( \beta = 4 \) means recall is weighted 16 times more than precision.
+
+In the context of this challenge, a particle is considered a "true" positive if it lies within 0.5 times the particle's radius of the ground truth particle, this tolerance helps account for some variability in particle locations, allowing small shifts while still counting as a correct prediction. And the particles are divided into 3 types and weighted differently:
+
+* Easy Particles (ribosome, virus-like particles, apo-ferritin) are assigned a weight of 1.
+* Hard Particles (thyroglobulin and $\beta$-galactosidase) are assigned a weight of 2. This weighting scheme reflects the relative difficulty of detecting each particle type, with harder particles having more influence on the final score. The hard particles are particularly prioritized, making recall critical for them.
+* Impossible Particles: Beta-amylase particles are included in the training data but do not contribute to the score, as they have a weight of 0 in the scoring mechanism. Even if predicted, they do not affect the final evaluation.
+\end{enumerate}
+
+The final F-beta score is computed by summing the per-particle scores, applying the weights to each particle type, and normalizing by the total weight:
+
+$$
+\text{Final\_lb\_score} = \sum \left( \frac{F_{4}(\text{particle}) \cdot \text{weight}(\text{particle})}{\text{weight}(\text{particle})} \right)
+$$
+
+This gives a Final lb\_score that reflects the model's ability to identify particles correctly, with emphasis on the harder particles and recall.
+
+## YOLO
+
+The following figure  graph shows the evaluation metrics on the YOLO11 model over 100 training epochs. Each line tendency and definition are described below:
+
+- **Precision (Blue Line):** Measures how many detected objects are classified correctly.  
+  The precision starts low and increases rapidly in the first 10 epochs, as the training configuration makes the learning rate increase after 10 epochs. After this, precision stabilizes above **0.6**.
+
+- **Recall (Orange Line):** Measures how many of the ground truth objects are correctly detected.  
+  It follows the same increasing trend as precision.
+
+- **mAP50 (Green Line):** Mean Average Precision at 50% IoU (Intersection over Union).  
+  This metric shows the accuracy for both classification and localization when the IoU threshold is 50%. In the graph, it increases significantly in the first 10 epochs and then stabilizes around **0.55–0.6**.
+
+- **mAP50-95 (Red Line):** Mean Average Precision across IoU thresholds from 50% to 95%, in increments of 5%.  
+  This metric evaluates performance across varying levels of object overlap. It grows more slowly than the other metrics, stabilizing around **0.4–0.45**.
+
+![Evaluation Metric for YOLO Model Training](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-4.png)
+
+This evaluation shows that the model achieves reliable performance in both classification (Precision, Recall) and localization (mAP metrics) after 100 training epochs.
+
+# Results and Discussion
+
+As a result, the 3D-Net model pre-trained with the synthetic data outperforms the baseline model in terms of final F-beta score (0.524 $>$ 0.339). YOLO11 model was trained with the provided competition dataset and outperforms the 3D implementation. Both approaches were published as submission for the kaggle competition.
+
+## Comparison of Architectures
+
+Both architectures implemented, 3D U-NET and YOLO11, are based on convolutional neural networks (CNNs) as their backbone. As their names says, 3D U-NET uses 3D convolutional layers to process volumetric datasets, while YOLO processes object detection in 2D images. 
+
+## Interpretation of results
+
+The following table shows the performance that both models achieved after submission to Kaggle. Submissions are evaluated by calculating the F-beta metric with a beta value of 4. In this case YOLO11 training got the best score, this result can be justified with the fact that YOLO models have faster inference and training time due to their 2D design. The can achieve high accuracy in detecting object centers when working with individual slices. In contrast, 3D U-NET  achieved a 0.33 score but at the cost og higher computational costs. 3D can better capture volumetric context, and with the use of synthetic data we were able to achieve a better score, but we were far behind YOLO11. 
+
+| Model                   | Kaggle Score |
+|-------------------------|--------------|
+| U-NET Baseline          | 0.339        |
+| Pre-trained 3D U-NET    | 0.524        |
+| Pre-trained YOLO 11     | 0.625        |
+
+## Object label analysis
+
+### 3D U-Net
+
+From the follwong table, we can observe the following attributes of the model prediction on all the particles:
+
+| **Particle Type**        | **P** | **T** | **Hit** | **Miss** | **FP** | **Precision** | **Recall** | **F-beta=4** | **Weight** |
+|--------------------------|-------|-------|---------|----------|--------|----------------|-------------|---------------|-----------|
+| apo-ferritin             | 66    | 139   | 51      | 88       | 15     | 0.772727       | 0.366906    | 0.378603      | 1         |
+| beta-amylase             | 98    | 31    | 18      | 13       | 80     | 0.183673       | 0.580645    | 0.515152      | 0         |
+| beta-galactosidase       | 157   | 40    | 22      | 18       | 135    | 0.140127       | 0.550000    | 0.469260      | 2         |
+| ribosome                 | 290   | 142   | 106     | 36       | 184    | 0.365517       | 0.746479    | 0.703357      | 1         |
+| thyroglobulin            | 560   | 94    | 83      | 11       | 477    | 0.148214       | 0.882979    | 0.683624      | 2         |
+| virus-like-particle      | 96    | 30    | 28      | 2        | 68     | 0.291667       | 0.933333    | 0.826389      | 1         |
+
+1. **"Easy" particles:**
+  - Virus-like-particle achieves the highest F-beta score (**0.826**), indicating effective identification.
+  - Apo-ferritin had the lowest F-beta score (**0.378**), suffering from low precision.
+  - Ribosome also achieves a high F-beta score (**0.703**), second only to Virus-like-particle.
+
+   Overall, the "easy" particles are truly easier to detect — except for Apo-ferritin.
+
+2. **"Hard" particles:**
+  - Thyroglobulin, despite being considered harder, shows strong recall, contributing positively to the overall evaluation.
+  - Beta-galactosidase suffers from low precision, which reduces its F-beta score.
+
+3. **"Impossible" particle:**  
+   Although listed as impossible, the model is able to detect the beta-amylase particle surprisingly well, with an F-beta score of **0.515** — even better than Apo-ferritin and Beta-galactosidase.
+
+The following visualizations Figure 9 illustrate the model’s performance in detecting particles on real-world data TS 6 4.
+These visualizations help assess the alignment of the model’s predictions with the ground truth and highlight common
+failure cases.
+
+![Visualization of the Detection of the model on data TS 6 4](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-5.png)
+
+We also recognize that particles with high recall often have lower precision, suggesting the model prioritizes identifying true positives but struggles with false positives and "Hard" particles tend to have more challenges, particularly in precision.
+
+### YOLO11
+
+YOLO11 results can be seen in the following prediction matrix, where each cell contains the proportion of predictions for that combination of true and predicted classes. The most important observations are: 
+
+![YOL11 Prediction Matrix](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-6.png)
+
+* Ribosome: 78\% of the ribosome instances were correctly classified. This is a relatively strong performance for this class.
+* apo-ferritin: 62\% of predictions are correct, but there is some misclassification (38\% in other classes).
+* virus-like-particle: Performs the best, with 90\% correct predictions.
+
+## Failure Analysis
+
+### 3D U-Net
+
+The model occasionally fails to identify true particles, leading to high recall penalties. In case of the "easy" particle apo-ferritin, the model detected only 51 out of 139 true particles, resulting in a recall of 36.69%. This suggests that the model struggles to generalize apo-ferritin features, possibly due to overlapping characteristics with other particles or insufficient training examples in the synthetic dataset which leads to a high miss rate reducing the F-beta score and the final lb\_score of the model.
+
+### YOLO
+
+For YOLO11 case the particle types beta-amylase and beta galactosidase have significant miss-classification rates, with proportions spread across other classes. For the thyroglobulin class, while 47 of the predictions are correct, it is also misclassified as "ribosome" and "virus-like particle." Also, the background of the images are misclassified, which might indicates a challenge for the model to differentiate background noise from actual particle types.
+
+# Conclusion and Future Work
+
+The research focuses on particle detection and classification in Cryo-ET dataset in which we use 2 CNN-based models YOLO11 and 3D U-Net and as a result, YOLO11 outperforms 3D U-Net in most particle type classifications in terms of F-beta score. It is important to mention that the types of proteins with the highest accuracies are due to the radius around the centroid being the largest in ribosome, thyroglobulin, and virus-like particles.
+
+In the case of YOLO11, we can see that it struggles with objects that span multiple slices; however, 3D U-Net captures volumetric context better, especially for irregularly shaped objects. This can be seen in the improvement of the score after the Kaggle submission baseline. YOLO11 could benefit still from adding of space partitioning data structures to better associate detected objects with their true 3D positions based on centroid data. 
+
+In conclusion, the choice between YOLO11 and 3D U-Net would be in favor of YOLO11 who have proved its potential in object detecting task like this but still should depend on the specific characteristics of the dataset and the task's priorities. Future work could explore hybrid approaches that combine YOLO11's speed and precision with the volumetric insights of 3D U-Net, aiming for a more comprehensive solution to cryo-ET particle detection challenges.
