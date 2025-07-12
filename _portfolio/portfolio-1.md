@@ -1,17 +1,17 @@
 ---
 title: "Cryo-electron Tomography  Object Identification"
-excerpt: "Short description of portfolio item number 1<br/><img src='/images/500x300.png'>"
+excerpt: "
+This project addresses the challenge of identifying and analyzing microscopic biological structures using Cryo-electron Tomography (Cryo-ET). It applies deep learning methods to both 3D image segmentation and 2D object detection, offering a dual approach to enhance structural biology research. <br/><img src='/images/p1.png'>"
 collection: portfolio
 ---
 
-The "CZII - CryoET Object Identification" competition on Kaggle challenges participants to identify small biological structures within large 3D volumes obtained through cryo-electron tomography (Cryo-ET). This report shows the solution implemented with a 3D-Unet and 2D object detection model for multi-class segmentation, the results obtained show that both approaches achieve accuracy in more than 50\
+The "CZII - CryoET Object Identification" competition on Kaggle challenges participants to identify small biological structures within large 3D volumes obtained through cryo-electron tomography (Cryo-ET). This report shows the solution implemented with a 3D-Unet and 2D object detection model for multi-class segmentation, the results obtained show that both approaches achieve accuracy in more than 50% of cases, with some specific classificationa being better than others.
 
 # Introduction
 
-The CryoET Object Identification challenge is funded by the
-Chan Zuckerberg Initiative and its primary objective is to acquire more knowledge about protein complexes for cellular function, which are essential for disease treatments. The available data obtained from tomographs are often available in a standardized format, and the analysis of this specific information is challenging when identifying the types of protein complexes within these images. 
+The CryoET Object Identification challenge is funded by the Chan Zuckerberg Initiative and its primary objective is to acquire more knowledge about protein complexes for cellular function, which are essential for disease treatments. The available data obtained from tomographs are often available in a standardized format, and the analysis of this specific information is challenging when identifying the types of protein complexes within these images. 
 
-Cryo-electron tomography opens the door to the study of the structure of unique objects, such as cell structures and even entire cells \cite{stewart2017cryo}. To do this, multiple images of the sample are taken at different inclinations within the microscope (generally from -70º to 70º), which are subsequently processed using specialized programs to reconstruct its three-dimensional structure, as seen in the figure. The available dataset provided in the competition contains already classified and denoised images of tomographs, the classification includes six particle types with varying prediction difficulty: apo-ferritin (easy), beta-amylase (not scored, impossible), beta-galactosidase (hard), ribosome (easy), thyroglobulin (hard), and virus-like-particle (easy), with beta-amylase excluded from scoring due to its evaluation challenges.
+Cryo-electron tomography opens the door to the study of the structure of unique objects, such as cell structures and even entire cells [Stewart, 2017](https://wires.onlinelibrary.wiley.com/doi/10.1002/wnan.1417. To do this, multiple images of the sample are taken at different inclinations within the microscope (generally from -70º to 70º), which are subsequently processed using specialized programs to reconstruct its three-dimensional structure, as seen in the figure. The available dataset provided in the competition contains already classified and denoised images of tomographs, the classification includes six particle types with varying prediction difficulty: apo-ferritin (easy), beta-amylase (not scored, impossible), beta-galactosidase (hard), ribosome (easy), thyroglobulin (hard), and virus-like-particle (easy), with beta-amylase excluded from scoring due to its evaluation challenges.
 
 ![Cryo-electron tomography (cryoET)](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap1.png)
 
@@ -29,7 +29,7 @@ For the second architecture implemented, the preparation of the datasets for tra
 
 ## Architectures Implemented
 
-There are numerous architectures, methods and approaches that have proven to be especially effective in certain object detection tasks and for extracting features of tomograms. Among these, the YOLO (You Only Look Once) network \cite{diwan2023object} and 3D U-NET \cite{agrawal2022segmentation} stand out.
+There are numerous architectures, methods and approaches that have proven to be especially effective in certain object detection tasks and for extracting features of tomograms. Among these, the YOLO (You Only Look Once) network [Diwan et al., 2023](https://link.springer.com/article/10.1007/s11042-022-13644-y) and 3D U-NET [Agrawal et al., 2022](https://www.sciencedirect.com/science/article/pii/S2666307422000213?via%3Dihub) stand out.
 
 ### 3D U-NET
 
@@ -37,7 +37,6 @@ There are numerous architectures, methods and approaches that have proven to be 
 Key features of the model 3D U-Net are:
 
 * Encoder-Decoder Structure:
-
   * Encoder: responsible for capturing contextual information by downsampling the input image through convolutional, max-pooling layers and extracting high-level features.
   * Decoder: responsible for reconstructing the spatial details by upsampling the features back to the input resolution and producing a dense segmentation map.
 
@@ -97,12 +96,12 @@ $$
 $$
 
 Where:
-- \( TP \) = True Positives
-- \( FP \) = False Positives
-- \( FN \) = False Negatives
-- \( $\alpha, $\beta \) are weights controlling the penalty for FP and FN respectively.
+- TP = True Positives
+- FP = False Positives
+- FN = False Negatives
+- $\alpha$ , $\beta$  = are weights controlling the penalty for FP and FN respectively.
 
-In this equation if $\alpha = $\beta = 0.5, this loss is equivalent to the Dice Loss.
+In this equation if $\alpha$  = $\beta$ = 0.5, this loss is equivalent to the Dice Loss.
 
 ![Loss Performance during training phase](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-2.png)
 
@@ -133,9 +132,9 @@ $$
 $$
 
 Where:
-* $\alpha : Weight for the Distribution Focal Loss (DFL Loss),
-* $\betha : Weight for the Classification Loss (CLS Loss),
-* $\gamma : Weight for the Bounding Box Loss (BOX Loss).
+* $\alpha$ : Weight for the Distribution Focal Loss (DFL Loss),
+* $\betha$ : Weight for the Classification Loss (CLS Loss),
+* $\gamma$ : Weight for the Bounding Box Loss (BOX Loss).
 
 The total loss can be calculated programmatically as:
 
@@ -170,17 +169,17 @@ During evaluation phase on the test dataset, we follow the official metric score
 In the context of this challenge, a particle is considered a "true" positive if it lies within 0.5 times the particle's radius of the ground truth particle, this tolerance helps account for some variability in particle locations, allowing small shifts while still counting as a correct prediction. And the particles are divided into 3 types and weighted differently:
 
 * Easy Particles (ribosome, virus-like particles, apo-ferritin) are assigned a weight of 1.
-* Hard Particles (thyroglobulin and $\beta$-galactosidase) are assigned a weight of 2. This weighting scheme reflects the relative difficulty of detecting each particle type, with harder particles having more influence on the final score. The hard particles are particularly prioritized, making recall critical for them.
+* Hard Particles (thyroglobulin and beta-galactosidase) are assigned a weight of 2. This weighting scheme reflects the relative difficulty of detecting each particle type, with harder particles having more influence on the final score. The hard particles are particularly prioritized, making recall critical for them.
 * Impossible Particles: Beta-amylase particles are included in the training data but do not contribute to the score, as they have a weight of 0 in the scoring mechanism. Even if predicted, they do not affect the final evaluation.
 \end{enumerate}
 
 The final F-beta score is computed by summing the per-particle scores, applying the weights to each particle type, and normalizing by the total weight:
 
 $$
-\text{Final\_lb\_score} = \sum \left( \frac{F_{4}(\text{particle}) \cdot \text{weight}(\text{particle})}{\text{weight}(\text{particle})} \right)
+\text{Final_lb_score} = \sum \left( \frac{F_{4}(\text{particle}) \cdot \text{weight}(\text{particle})}{\text{weight}(\text{particle})} \right)
 $$
 
-This gives a Final lb\_score that reflects the model's ability to identify particles correctly, with emphasis on the harder particles and recall.
+This gives a Final_lb_score that reflects the model's ability to identify particles correctly, with emphasis on the harder particles and recall.
 
 ## YOLO
 
@@ -204,7 +203,7 @@ This evaluation shows that the model achieves reliable performance in both class
 
 # Results and Discussion
 
-As a result, the 3D-Net model pre-trained with the synthetic data outperforms the baseline model in terms of final F-beta score (0.524 $>$ 0.339). YOLO11 model was trained with the provided competition dataset and outperforms the 3D implementation. Both approaches were published as submission for the kaggle competition.
+As a result, the 3D-Net model pre-trained with the synthetic data outperforms the baseline model in terms of final F-beta score (0.524 > 0.339). YOLO11 model was trained with the provided competition dataset and outperforms the 3D implementation. Both approaches were published as submission for the kaggle competition.
 
 ## Comparison of Architectures
 
@@ -263,8 +262,8 @@ YOLO11 results can be seen in the following prediction matrix, where each cell c
 
 ![YOL11 Prediction Matrix](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-6.png)
 
-* Ribosome: 78\% of the ribosome instances were correctly classified. This is a relatively strong performance for this class.
-* apo-ferritin: 62\% of predictions are correct, but there is some misclassification (38\% in other classes).
+* Ribosome: 78% of the ribosome instances were correctly classified. This is a relatively strong performance for this class.
+* apo-ferritin: 62% of predictions are correct, but there is some misclassification (38% in other classes).
 * virus-like-particle: Performs the best, with 90\% correct predictions.
 
 ## Failure Analysis
