@@ -169,7 +169,7 @@ The complete dataset for model training can be summarized with the following fig
 
 There where two architectures implemented for this data corpus:
 
-* LSTM: is recommended for finding patterns in sequential data. As described in section \ref{sec:state}, is well sited for detecting patters in customer cycle of purchases.
+* LSTM: is recommended for finding patterns in sequential data. As described in the "State of the art" section, is well sited for detecting patters in customer cycle of purchases.
 * FNN: Given that we based on feature relationships, Fully Connected Neural Networks (FNN) can identify correlations between features like purchase frequency, recency, and promotions. Features used inside our 
 
 The code implemented on FNN used TensorFlow and Keras for a binary classification task. The training dataset is split into training and validation with 20\% of the data is reserved for validation.  The model consists of an input layer that matches the number of features in the dataset, followed by three dense layers with 256, 128, and 64 neurons, respectively. Each layer employs the ReLU activation function, with a L2 regularizer to prevent overfitting. The output layer uses a single neuron with a sigmoid activation function, producing probabilities for binary classification.
@@ -180,22 +180,22 @@ The model is trained using binary cross-entropy loss, and the result of the pred
 
 1. Initial basic implementation: from scratch based on the paper [Jiaxi Tang, 2018](https://arxiv.org/abs/1809.07426). 
 Training Setup:
-   1. Loss function: Cross-entropy loss. 
-   2. Optimization function: Adam with default learning rate. 
-   3. Train 1 file at a time, 10 times in total for all 10 files
+   * Loss function: Cross-entropy loss. 
+   * Optimization function: Adam with default learning rate. 
+   * Train 1 file at a time, 10 times in total for all 10 files
 
 Result: Evaluate the resulted models on the test dataset and obtain the Hit rate @10 score of 0.
 
 2. Adding relevant features and Final_score:
    Selecting features:
-   1. Customer-level attributes: loyalty card, frequency... 
-   2. Item-level attributes: product category (frozen, fresh,...)
+   * Customer-level attributes: loyalty card, frequency... 
+   * Item-level attributes: product category (frozen, fresh,...)
 
 By adding the embedding layers of these additional features, concatenate to the corresponding original embedding of customers or items and modify the fully connected (FC) layers to process the combined feature set and finally at the output of the model, we also add the Final\_score as leverage in the prediction of each customer, the resulted model trained on 1 file achieved the hit rate @10 score of 0.001.
 
 3. Negative sampling:
-   1. The negative samples have the same sector and shell level with the most frequently bought products of the customer. The score gained from this method is 0.1013.
-   2. The negative samples are the popular products that are in the top 50 most frequently bought products of all customers. The score gained from this method is 0.102.
+   * The negative samples have the same sector and shell level with the most frequently bought products of the customer. The score gained from this method is 0.1013. 
+   * The negative samples are the popular products that are in the top 50 most frequently bought products of all customers. The score gained from this method is 0.102.
 
 # Experimental Evaluation
 
@@ -210,7 +210,7 @@ The experiments done on the test dataset after training, presented in following 
 | FNN       | Hard Negatives    | Relevance      | 40000       | 0.19    |
 | CASER     | Hard Negatives    | ProductId      | 80000       | 0.10    |
 
-#Conclusion
+# Conclusion
 
 We achieved the highest score of 0.356 using a weighted scoring analysis based on three key factors: Frequency, Recency, and Quantity. This method demonstrated its effectiveness in aligning with customer purchasing behavior. However, as a non-learning, heuristic-based approach, it inherently has a ceiling on its performance and adaptability to more complex patterns.
 
