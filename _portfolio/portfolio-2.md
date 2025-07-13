@@ -1,285 +1,219 @@
 ---
 title: "Product Re-purchase Prediction:"
 excerpt: "
-Developed a recommendation system for Carrefour to predict customer repurchases using transaction history and product metadata. Achieved a top hit rate of 35.6% with a weighted frequency-recency-quantity scoring method. Enhanced predictions with BERT-based product embeddings, feature engineering, and deep learning models including FNN, LSTM, and CASER. Presented as part of ICML 2024. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p2.png'>"
+Developed a recommendation system for Carrefour to predict customer repurchases using transaction history and product metadata. Achieved a top hit rate of 35.6% with a weighted frequency-recency-quantity scoring method. Enhanced predictions with BERT-based product embeddings, feature engineering, and deep learning models including FNN, LSTM, and CASER. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p2.png'>"
 collection: portfolio
 ---
 
-The "CZII - CryoET Object Identification" competition on Kaggle challenges participants to identify small biological structures within large 3D volumes obtained through cryo-electron tomography (Cryo-ET). This report shows the solution implemented with a 3D-Unet and 2D object detection model for multi-class segmentation, the results obtained show that both approaches achieve accuracy in more than 50% of cases, with some specific classificationa being better than others.
+Carrefour's 2027 strategic plan emphasizes data-driven transformation offering an educational data science challenge in partnership with the University of Bordeaux. Several analysis and 2 models were implemented to predict the products that Carrefour customers will repurchase using their history of frequent purchases. The report focuses on the implementation of different approaches to predict purchases by ranking custom products recommended to each customer.
 
 # Introduction
 
-The CryoET Object Identification challenge is funded by the Chan Zuckerberg Initiative and its primary objective is to acquire more knowledge about protein complexes for cellular function, which are essential for disease treatments. The available data obtained from tomographs are often available in a standardized format, and the analysis of this specific information is challenging when identifying the types of protein complexes within these images. 
+The objective of this kaggle competition is to develop a product recommendation system to predict the items customers are most likely to repurchase using the Frequent Purchase Carousel, a feature available on Carrefour's website. 
 
-Cryo-electron tomography opens the door to the study of the structure of unique objects, such as cell structures and even entire cells [Stewart, 2017](https://wires.onlinelibrary.wiley.com/doi/10.1002/wnan.1417. To do this, multiple images of the sample are taken at different inclinations within the microscope (generally from -70º to 70º), which are subsequently processed using specialized programs to reconstruct its three-dimensional structure, as seen in the figure. The available dataset provided in the competition contains already classified and denoised images of tomographs, the classification includes six particle types with varying prediction difficulty: apo-ferritin (easy), beta-amylase (not scored, impossible), beta-galactosidase (hard), ribosome (easy), thyroglobulin (hard), and virus-like-particle (easy), with beta-amylase excluded from scoring due to its evaluation challenges.
+As competitors we where assigned the challenge to implement methods to predict the first transaction for a given customer based on their historical purchase data and the associated product information. From this we assign a ranking between 1 and 10, 1 being the most likely one to be bought, in order for the carrefours website to recommend these ranked products and improve customer satisfaction.
 
-![Cryo-electron tomography (cryoET)](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap1.png)
+The project presents three datasets:
+
+* Product information detailing items available for sale.
+* A training dataset containing the purchase history of 100,000 customers from 2022 to 2023.
+* A validation dataset with the transaction history of 80,000 customers in 2024.
+
+The evaluation metric used in this competition is called "Hit Rate @10", which corresponds to the accuracy of the predicted products inside the ground-truth test set. In other words, out of the 10 recommended products, how many are actually purchased by the customer.
+
+The approaches implemented in this report include the use of data analysis and the information gained for it, weighted coefficients for relevance recommendations, fine tuning of large language models for context generation of products and  deep neural network for purchase history analysis and predictions.
+
+# State of the art
+
+In the context of purchase prediction and recommendation systems, several state-of-the-art models have demonstrated their potential, providing advances in Machine Learning and Deep Learning.
+
+From this, several models were considered fpr this work as follows:
+
+* Sequence Models:
+  * Hierarchical Recurrent Neural Networks (RNN) and Point Process model [Bjørnar Vassøy, 11–15,
+    2019](https://arxiv.org/abs/1812.01276): ideal for complex session-based recommendations where both inter-session dependencies and time gaps between sessions are crucial, such as predicting next-session interactions and return-time. 
+  * RNNs with Long Short-Term Memory (LSTM) layer model [Graves, 2013](https://arxiv.org/abs/1308.0850): flexible option for sequential recommendation tasks where longer interaction histories are available and temporal dependencies are essential but do not require a session-level hierarchy. It captures sequential dependencies effectively but does not inherently separate sessions. 
+  * Autoencoder Gated Recurrent Unit (GRU) model [Xin Chen, 2013](https://arxiv.org/abs/2207.06225): Efficient for real-time, contextually relevant recommendations that need to quickly respond to immediate patterns in transactional data, but may need fine-tuning for longer-term dependencies.
+* Attention-Based
+  * BERT: Bidirectional Encoder Representation from Transformer (BERT) is a pre-processing mechanism that, based on representations of the general language, is intended to fulfill the requirements of more specific conditions like transfer learning. It is a language model based on the transformer architecture [Vaswani, 2017](https://arxiv.org/abs/1706.03762) and uses the attention mechanism for next token prediction and classification.
+  * Models like BERT allow you to learn this intense pre-training process and have it tested in tests like these components are working. This process of adjusting to new information is known as Fine Tuning (fine tuning) [Gao et al., 2019](https://ieeexplore.ieee.org/document/8864964).
+* CNN-Based Model:
+  * CASER (Convolutional Sequence Embedding Recommendation) [Jiaxi Tang, 2018](https://arxiv.org/abs/1809.07426): Uses CNN layers on both horizontal and vertical relationships in user-item sequences and able to effectively captures sequential patterns in shorter sequences without the need for recurrent connections, but may not capture bidirectional dependencies as effectively as attention-based models.
+
+After extensive research and evaluation, BERT and CASER were selected as the most suitable models for this project because of their complementary strengths and proven effectiveness in similar applications. By integrating these models or using them in a comparative framework, the project aims to achieve robust and scalable purchase prediction.
 
 # Methodology
 
-## Dataset
+## Data Analysis
 
-The dataset consists of 7 cryo-electron tomography (cryoET) images, represented as 3D tomograms where each voxel corresponds to a 10x10x10 nm cube, as seen in the Figure. Each tomogram contains various objects of interest, whose locations are provided as centroid coordinates in associated files. Objects include ribosomes, virus-like particles, apo-ferritin, thyroglobulin, and B-galactosidase, with radius ranging from 6 to 15 voxels. The challenge allows a voxel-level labeling to be considered correct if it falls within half the particle's radius from the actual centroid. There are associated files to each tomogram containing x, y, z coordinates of object centroids.
+The analysis initially focused on the relationship between purchase quantity and recency, and later we incorporated frequency for deeper insights.
 
-![Voxel Segmentation](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap2.png)
+### Analysis of the top most recently purchased products of each customer using Quantity and Recency
 
-Synthetic data has been used to train models to detect these objects. This data is generated with realistic characteristics mimicking the tomograms, serving as a proxy for real-world samples, especially when annotated real tomograms are limited.
+The 2 main factors that we used for this part are:
+* Quantity: The number of items purchased in each transaction.
+* Recency: The time elapsed since the last purchase for a specific product or customer which can be calculated by: Recency = Last day - First day.
 
-For the second architecture implemented, the preparation of the datasets for training converts 3D volumetric data into 2D images slices, this reduces memory requirements and address data scarcity. Key steps  in this process include normalizing the data, creating image slices, generating YOLO-compatible annotations, and organizing datasets into structured folders for training and validation.
-
-## Architectures Implemented
-
-There are numerous architectures, methods and approaches that have proven to be especially effective in certain object detection tasks and for extracting features of tomograms. Among these, the YOLO (You Only Look Once) network [Diwan et al., 2023](https://link.springer.com/article/10.1007/s11042-022-13644-y) and 3D U-NET [Agrawal et al., 2022](https://www.sciencedirect.com/science/article/pii/S2666307422000213?via%3Dihub) stand out.
-
-### 3D U-NET
-
-3D U-Net is a convolutional neural network (CNN) architecture designed specifically for image segmentation tasks, where the goal is to classify each pixel (or voxel in 3D cases) in the input image. It is particularly well-suited for biomedical image analysis, making it ideal for the cryo-electron tomography (cryoET) dataset.\\
-Key features of the model 3D U-Net are:
-
-* Encoder-Decoder Structure:
-  * Encoder: responsible for capturing contextual information by downsampling the input image through convolutional, max-pooling layers and extracting high-level features.
-  * Decoder: responsible for reconstructing the spatial details by upsampling the features back to the input resolution and producing a dense segmentation map.
-
-* Skip Connections: while encoding, the model also send the outputs to the corresponding layers and the Decoder help recover fine-grained spatial details lost during downsampling. These connections concatenate feature maps from the Encoder with those in the Decoder, enhancing localization accuracy.
-* 3D Adaptation: For the CryoET dataset, the 2D U-Net is extended to a 3D version, where 3D convolutions and pooling operations are applied, enabling the model to process volumetric data and segment objects in 3D space effectively.
-
-### YOLO
-
-This method incorporates a real-time object detection stage, which uses a convolutional neural network to divide a 2D image into regions and predict the coordinates and probabilities of existence of the objects in each region. YOLO has the advantage of being fast, accurate and robust against different lighting conditions, size and shape of the objects.
-
-Several studies have applied YOLO in detection tasks from medical images: such as mammography  [Al-Masni et al., 2018](https://www.nature.com/articles/s41592-018-0259-9), the study of melanoma [Nie et al., 2019](https://ieeexplore.ieee.org/document/8970033) and dental diseases [Sonavane & Kohar, 2022](https://link.springer.com/chapter/10.1007/978-981-16-6285-0_12), achieving accuracies and sensitivities above 90% in laboratory simulations and studies with patients, for internal validation data. These results may be an indicator of the effectiveness of the method in detecting abnormal objects in biomedical tasks, as well as its potential to become a novel approach, capable of performing disease detection and classification with good performance in clinical routine, which could also have relevant implications for this specific competition.
-
-The Python programming language and PyTorch machine learning frameworks were used. Additionally, tools and libraries such as YOLOv5 from Ultralytics were employed to facilitate model training and object detection. The YOLO architecture was implemented using a pre-trained model (YOLO11), which incorporates recent advancements in object detection and data augmentation. Data pre-processing and augmentation included techniques like rotation, shear, flipping, and mix-up during training. The development and training process used a machine equipped with an NVIDIA L4 GPU (22.5 GB GDDR6), providing the computational power necessary to efficiently train the model + 235 GB HDD storage.
-
-The latest YOLO11 model architecture, as shown in following figure, is composed by three main parts:
-
-![YOLO11 Pre-Trained Model Architecture](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-ap3.png)
-
-* Backbone: Is the deep learning architecture that acts as a feature extractor.
-* Neck: Combines the features acquired from the various layers of the backbone model.
-* Head: Predicts the classes and bounding box regions which is the final output produced by the object detection model. 
-
-## Training Process
-
-### Transfer Learning with Synthetic Data
-
-Before training the model with real-world data, we opted for a transfer learning approach by pre-training the model on synthetic data. Synthetic data often provides a controlled environment where particle features, distributions, and annotations are more reliable and consistent than in real data. Pre-training allows the model to learn general features and patterns that are transferable to real-world data, such as recognizing particle shapes and boundaries.
-
-### Pre-trained 3D U-NET
-
-During training, the validation metric used in this model is Dice Metric, which is commonly used in segmentation tasks to evaluate the overlap between the predicted segmentation and the ground truth. It is not the same as "accuracy" in a traditional classification sense but is instead a measure of how well the predicted and true segmentation align.
-
-The Dice score ranges from 0 to 1:
-
-* 1 indicates perfect overlap (the prediction is exactly the same as the ground truth).
-* 0 indicates no overlap.
-
-It is computed as: 
+The following equation combines the key behavioral factors — quantity and recency — into a single Score to rank items for recommendation for each customer. To assign a relative importance (via weights $\alpha$), reflecting their contribution to predicting future purchases.
 
 $$
-Dice~Score = \frac{2|A \cap B|}{|A| + |B|}
+\text{Score} = \alpha \cdot \text{Quantity} + (1 - \alpha) \cdot \text{Recency}
 $$
 
-Where:
+As shown in the following picture, we also found that at $\alpha$ = 0.97 we're able to achieve the highest hit rate score which represent the contribution of the factors into the final prediction.\\
+Customers seem to prefer items they purchase in larger quantities, even if those purchases were not recent. This simple equation may not fully capture the complexity of customer behavior, which is why this approach relies heavily on Quantity.
 
-* A is the predicted segmentation
-* B is the ground truth segmentation.
 
-![Validation Score Performance during training phase](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-1.png)
+![Tuning alpha](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-1.png)
+![Tuning alpha](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-2.png)
 
-The model performs well while training with the validation score increasing.\\  And as for the loss function used in 3D U-Net model is the Tversky Loss, which is particularly suited for imbalanced segmentation tasks, especially when one class significantly dominates the others.
+### Incorporating Frequency
 
-The Tversky Loss is a generalization of the Dice Loss and is defined as:
+Since Frequency is known for its effectiveness in recommendation task, we thought it would be good to see how it performs with Quantity and Recency.
 
-$$
-\mathcal{L}_{\text{Tversky}} = 1 - \frac{TP}{TP + \alpha \cdot FP + \beta \cdot FN}
-$$
+* Frequency: The number of transactions a customer makes in a given period.
 
-Where:
-- TP = True Positives
-- FP = False Positives
-- FN = False Negatives
-- $\alpha$ , $\beta$  = are weights controlling the penalty for FP and FN respectively.
-
-In this equation if $\alpha$  = $\beta$ = 0.5, this loss is equivalent to the Dice Loss.
-
-![Loss Performance during training phase](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-2.png)
-
-The model's loss initially decreases well at first but then struggles to improves from around epoch 50.
-
-### YOLO 
-
-The training configuration includes the following parameters and optimization techniques: 
-
-* Epochs: The model is trained for 100 full passes through the dataset.
-* Warm-up Epochs: Gradual increase in the learning rate over the first 10 epochs.
-* Batch Size: The number of samples processed in one training step is 32.
-* Image Size: Input images are resized to 640 x 640 pixels.
-* Data Augmentation: 
-  * Rotation: Up to ±45 degrees.
-  * Shear: Up to 5 degrees.
-  * Horizontal and Vertical Flipping: Probabilities of 0.5 for both.
-  * Mixup: A data augmentation technique that blends two training images.
-  * Copy-Paste: Augmentation by combining regions from different images.
-* Optimizer: AdamW
-* Seed: 8620 – Used for reproducibility.
-* Initial Learning Rate: 0.0003
-
-Losses in the following figure are divided in three terms that define the overall loss function used in object detection models like YOLO11. The total loss function for object detection is given by:
+And so we updated the equation as following:
 
 $$
-\text{Loss} = \alpha \cdot \text{DFL Loss} + \beta \cdot \text{CLS Loss} + \gamma \cdot \text{BOX Loss}
+\text{Score} = \alpha \cdot \text{Quantity} + \beta \cdot \text{Frequency} + \gamma \cdot \text{Recency}
 $$
 
-Where:
-* $\alpha$ : Weight for the Distribution Focal Loss (DFL Loss),
-* $\betha$ : Weight for the Classification Loss (CLS Loss),
-* $\gamma$ : Weight for the Bounding Box Loss (BOX Loss).
-
-The total loss can be calculated programmatically as:
-
 $$
-\text{Total Loss} = \alpha \cdot dfl + \beta \cdot cls + \gamma \cdot box
+\alpha + \beta + \gamma = 1
 $$
 
-![YOLO Training Losses Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-3.png)
+The equation represents a weighted scoring mechanism used to rank or evaluate items based on 3 key factors: Quantity, Frequency, and Recency; and it must satisfy equation (3) to ensure a balanced combination; after that we use the Score as a composite metric that combines these factors to rank products for recommendation.
 
-# Experimental evaluation setup
+After tuning as in the following figure, we found that by ranking the recommendation items with the resulted Score from $\alpha$ = 0.03, $\beta$ = 0.87, $\gamma$ = 0.1, it gave us the highest hit rate score of 0.35694 as in our submission on the Kaggle competition.
 
-## 3D U-Net
+![Tuning alpha and beta](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-3.png)
+![Tuning alpha and beta](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-4.png)
 
-During evaluation phase on the test dataset, we follow the official metric score of the Kaggle competition which focuses on precision, recall, and F-beta score.
+### Summary of Findings
+* Achieve a higher score than the baseline.
+* Acquire useful information to enhance the performance of the ML models.
 
-1. **Precision**: Measures the proportion of correctly predicted objects (hits) among all predicted objects.  
-   $$
-   \text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}
-   $$
+## Data Preprocessing
 
-2. **Recall**: Measures the proportion of correctly predicted objects among all ground-truth objects.  
-   $$
-   \text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}
-   $$
+### Products Embedding  with Bert
 
-3. **F-beta Score**: A weighted harmonic mean of precision and recall, emphasizing recall (with \( \beta = 4 \)):  
-   $$
-   F_{\beta} = \frac{(1+\beta^2) \cdot \text{Precision} \cdot \text{Recall}}{(\beta^2 \cdot \text{Precision}) + \text{Recall}}
-   $$
-   In this case, \( \beta = 4 \) means recall is weighted 16 times more than precision.
+The baseline provided by the competition does not use in any form the product dataset information, and it was for competitors to use this data source in a effective way. As described in the following columns, the datasets for products have a large amount of associated information for each product, most of the columns being used as a binary description of whether the product is defined by the specific column.
 
-In the context of this challenge, a particle is considered a "true" positive if it lies within 0.5 times the particle's radius of the ground truth particle, this tolerance helps account for some variability in particle locations, allowing small shifts while still counting as a correct prediction. And the particles are divided into 3 types and weighted differently:
+| **Field**                          | **Description**                                   | **Field**                          | **Description**                                     |
+|-----------------------------------|---------------------------------------------------|-----------------------------------|-----------------------------------------------------|
+| **product_id**                    | Product name                                      | **gluten_free**                   | Indicates whether the product is gluten-free        |
+| **product_description**           | Product description                               | **halal**                         | Indicates whether the product is halal              |
+| **department_key**                | Department key                                    | **casher**                        | Indicates whether the product is kosher             |
+| **class_key**                     | Class key                                         | **eco_friendly**                  | Indicates whether the product is eco-friendly       |
+| **subclass_key**                  | Subclass key                                      | **local_french**                  | Indicates whether the product is locally produced   |
+| **sector**                        | Sector name                                       | **artificial_coloring_free**      | Free of artificial coloring                         |
+| **brand_key**                     | Brand name                                        | **taste_enhancer_free**           | Free of taste enhancers                             |
+| **shelf_level1**                  | Top-level shelf category                          | **naturality**                    | Naturality score                                    |
+| **shelf_level2**                  | Second-level shelf category                       | **antibiotic_free**               | Indicates whether the product is antibiotic-free    |
+| **shelf_level3**                  | Third-level shelf category                        | **reduced_sugar**                 | Reduced sugar content                               |
+| **shelf_level4**                  | Fourth-level shelf category                       | **vegetarian**                    | Indicates whether the product is vegetarian         |
+| **bio**                           | Organic product flag                              | **pesticide_free**                | Indicates whether the product is pesticide-free     |
+| **sugar_free**                    | Sugar-free flag                                   | **grain_free**                    | Indicates whether the product is grain-free         |
+| **aspartame_free**               | Aspartame-free flag                               | **no_added_sugar**                | No added sugar flag                                 |
+| **no_added_salt**                 | No added salt flag                                | **salt_reduced**                  | Reduced salt content                                |
+| **nitrite_free**                  | Nitrite-free flag                                 | **fed_without_ogm**               | Animals fed without GMOs                            |
+| **no_artificial_flavours**        | No artificial flavors flag                        | **porc**                          | Indicates whether the product contains pork         |
+| **vegan**                         | Indicates whether the product is vegan            | **frozen**                        | Indicates whether the product is frozen             |
+| **fat_free**                      | Fat-free flag                                     | **reduced_fats**                  | Reduced fat content                                 |
+| **fresh**                         | Indicates whether the product is fresh            | **alcool**                        | Indicates whether the product contains alcohol      |
+| **lactose_free**                  | Lactose-free flag                                 | **phenylalanine_free**            | Phenylalanine-free flag                             |
+| **palm_oil_free**                 | Palm oil-free flag                                | **ecoscore**                      | Ecoscore                                            |
+| **produits_du_monde**             | International product flag                        | **regional_product**              | Regional product flag                               |
+| **national_brand**                | National brand flag                               | **first_price_brand**             | First-price brand flag                              |
+| **carrefour_brand**               | Carrefour brand flag                              |                                   |                                                     |
 
-* Easy Particles (ribosome, virus-like particles, apo-ferritin) are assigned a weight of 1.
-* Hard Particles (thyroglobulin and beta-galactosidase) are assigned a weight of 2. This weighting scheme reflects the relative difficulty of detecting each particle type, with harder particles having more influence on the final score. The hard particles are particularly prioritized, making recall critical for them.
-* Impossible Particles: Beta-amylase particles are included in the training data but do not contribute to the score, as they have a weight of 0 in the scoring mechanism. Even if predicted, they do not affect the final evaluation.
-\end{enumerate}
+The processing of the product data set started with the selection of certain features. Given the large amount of textual information, the restructure started by creating a single text defining each product by the selection of specific features (not all columns were added to this description). As seen in following picture the process started by using all columns in English, since the pre-trained LLM "Bert-Uncased" was based on English text [Behera & Dash, 2022](https://link.springer.com/chapter/10.1007/978-981-19-0825-5_40). 
 
-The final F-beta score is computed by summing the per-particle scores, applying the weights to each particle type, and normalizing by the total weight:
+![Translated features from products dataset](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-5.png)
 
-$$
-\text{Final_lb_score} = \sum \left( \frac{F_{4}(\text{particle}) \cdot \text{weight}(\text{particle})}{\text{weight}(\text{particle})} \right)
-$$
+The next step was to unify all selected features as seen in the following picture, this special structure used token separation that is understood by the Bert model and creates more meaningful embeddings. As of the transformer architecture released in 2018 [Vaswani, 2017](https://arxiv.org/abs/1706.03762), Bert is based on learned embedding that are trained and updated based on the information context [Wang, 2024](https://escholarship.org/uc/item/5kr0p5m7).
 
-This gives a Final_lb_score that reflects the model's ability to identify particles correctly, with emphasis on the harder particles and recall.
+![Structured text before fine tuning and context embedding process](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-6.png)
 
-## YOLO
+The embedding creation had three important steps:
 
-The following figure  graph shows the evaluation metrics on the YOLO11 model over 100 training epochs. Each line tendency and definition are described below:
+* Restructuring of the column features as mentioned in the previous paragraph.
+* Prediction of the "Shelf Level 1" feature on each product by fine-tuning the LLM.
+* Final embedding creation with fine tuned Bert model.
 
-- **Precision (Blue Line):** Measures how many detected objects are classified correctly.  
-  The precision starts low and increases rapidly in the first 10 epochs, as the training configuration makes the learning rate increase after 10 epochs. After this, precision stabilizes above **0.6**.
+The results from this process gave us a 768 length of embedding numpy array done to 82966 products. This is used as a dictionary when the product is encountered inside the historic training data rows described in the next section.
 
-- **Recall (Orange Line):** Measures how many of the ground truth objects are correctly detected.  
-  It follows the same increasing trend as precision.
+### Historic Data Feature Engineering
 
-- **mAP50 (Green Line):** Mean Average Precision at 50% IoU (Intersection over Union).  
-  This metric shows the accuracy for both classification and localization when the IoU threshold is 50%. In the graph, it increases significantly in the first 10 epochs and then stabilizes around **0.55–0.6**.
+This training data contains the transaction history of 100,000 customers. It is divided into 10 parts, each containing the transactions of 10,000 customers for the years 2022 and 2023. The analysis described in the "Data Analysis" section was added as the first feature engineered score, these associated a top of recommended products to each customer on the dataset. Listed are the next new columns added to the train data corpus:
 
-- **mAP50-95 (Red Line):** Mean Average Precision across IoU thresholds from 50% to 95%, in increments of 5%.  
-  This metric evaluates performance across varying levels of object overlap. It grows more slowly than the other metrics, stabilizing around **0.4–0.45**.
+* Date related columns: we extracted the month, day and year from the original date column. 
+* Average Quantity: average number of items a client purchases per transaction.
+* Promo Ratio: proportion of purchases made by a specific customer that included products on promotion by transaction.
+* Days Since Last Purchase: days that have passed since the customer's last purchase.
+* Unique Products : The total number of distinct products a customer has purchased over time.
 
-![Evaluation Metric for YOLO Model Training](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-4.png)
+Since the objective prediction from this data corpus is based on the relevance of each transaction made by each customer, we created new rows of non-relevant examples with two types of sampling:
 
-This evaluation shows that the model achieves reliable performance in both classification (Precision, Recall) and localization (mAP metrics) after 100 training epochs.
+* Easy Negatives: Negatives that are different or selected away from the target and don’t provide much learning signal. The model can easily distinguish them, leading to faster convergence, but to a suboptimal representation.
+* Hard Negatives: Negatives that are more similar to the target force the model to learn finer distinctions. This improves the quality of embeddings and decision boundaries. In this case, hard negatives were selected by evaluating the similarities of the embeddings obtained from the product descriptions.
 
-# Results and Discussion
+## Models Implementation
 
-As a result, the 3D-Net model pre-trained with the synthetic data outperforms the baseline model in terms of final F-beta score (0.524 > 0.339). YOLO11 model was trained with the provided competition dataset and outperforms the 3D implementation. Both approaches were published as submission for the kaggle competition.
+### Bert with FNN
 
-## Comparison of Architectures
+The complete dataset for model training can be summarized with the following figure. The columns that were left were the ones listed in "Historic Data Feature Engineering" section, the relevant binary column and the added products embedding explained in "Products Embedding  with Bert" section.
 
-Both architectures implemented, 3D U-NET and YOLO11, are based on convolutional neural networks (CNNs) as their backbone. As their names says, 3D U-NET uses 3D convolutional layers to process volumetric datasets, while YOLO processes object detection in 2D images. 
+![Complete Data Corpus](https://wayiok.github.io/academicpages.github.io/images/portfolio/p2-7.png)
 
-## Interpretation of results
+There where two architectures implemented for this data corpus:
 
-The following table shows the performance that both models achieved after submission to Kaggle. Submissions are evaluated by calculating the F-beta metric with a beta value of 4. In this case YOLO11 training got the best score, this result can be justified with the fact that YOLO models have faster inference and training time due to their 2D design. The can achieve high accuracy in detecting object centers when working with individual slices. In contrast, 3D U-NET  achieved a 0.33 score but at the cost og higher computational costs. 3D can better capture volumetric context, and with the use of synthetic data we were able to achieve a better score, but we were far behind YOLO11. 
+* LSTM: is recommended for finding patterns in sequential data. As described in section \ref{sec:state}, is well sited for detecting patters in customer cycle of purchases.
+* FNN: Given that we based on feature relationships, Fully Connected Neural Networks (FNN) can identify correlations between features like purchase frequency, recency, and promotions. Features used inside our 
 
-| Model                   | Kaggle Score |
-|-------------------------|--------------|
-| U-NET Baseline          | 0.339        |
-| Pre-trained 3D U-NET    | 0.524        |
-| Pre-trained YOLO 11     | 0.625        |
+The code implemented on FNN used TensorFlow and Keras for a binary classification task. The training dataset is split into training and validation with 20\% of the data is reserved for validation.  The model consists of an input layer that matches the number of features in the dataset, followed by three dense layers with 256, 128, and 64 neurons, respectively. Each layer employs the ReLU activation function, with a L2 regularizer to prevent overfitting. The output layer uses a single neuron with a sigmoid activation function, producing probabilities for binary classification.
 
-## Object label analysis
+The model is trained using binary cross-entropy loss, and the result of the prediction done on the training model involve the evaluation of the top 50 products the customer has frequently bought and assigning the probabilities obtained from the model to each product and get the top 10 values closest to 1.
 
-### 3D U-Net
+### CASER
 
-From the follwong table, we can observe the following attributes of the model prediction on all the particles:
+1. Initial basic implementation: from scratch based on the paper [Jiaxi Tang, 2018](https://arxiv.org/abs/1809.07426). 
+Training Setup:
+   1. Loss function: Cross-entropy loss. 
+   2. Optimization function: Adam with default learning rate. 
+   3. Train 1 file at a time, 10 times in total for all 10 files
 
-| **Particle Type**        | **P** | **T** | **Hit** | **Miss** | **FP** | **Precision** | **Recall** | **F-beta=4** | **Weight** |
-|--------------------------|-------|-------|---------|----------|--------|----------------|-------------|---------------|-----------|
-| apo-ferritin             | 66    | 139   | 51      | 88       | 15     | 0.772727       | 0.366906    | 0.378603      | 1         |
-| beta-amylase             | 98    | 31    | 18      | 13       | 80     | 0.183673       | 0.580645    | 0.515152      | 0         |
-| beta-galactosidase       | 157   | 40    | 22      | 18       | 135    | 0.140127       | 0.550000    | 0.469260      | 2         |
-| ribosome                 | 290   | 142   | 106     | 36       | 184    | 0.365517       | 0.746479    | 0.703357      | 1         |
-| thyroglobulin            | 560   | 94    | 83      | 11       | 477    | 0.148214       | 0.882979    | 0.683624      | 2         |
-| virus-like-particle      | 96    | 30    | 28      | 2        | 68     | 0.291667       | 0.933333    | 0.826389      | 1         |
+Result: Evaluate the resulted models on the test dataset and obtain the Hit rate @10 score of 0.
 
-1. **"Easy" particles:**
-  - Virus-like-particle achieves the highest F-beta score (**0.826**), indicating effective identification.
-  - Apo-ferritin had the lowest F-beta score (**0.378**), suffering from low precision.
-  - Ribosome also achieves a high F-beta score (**0.703**), second only to Virus-like-particle.
+2. Adding relevant features and Final_score:
+   Selecting features:
+   1. Customer-level attributes: loyalty card, frequency... 
+   2. Item-level attributes: product category (frozen, fresh,...)
 
-   Overall, the "easy" particles are truly easier to detect — except for Apo-ferritin.
+By adding the embedding layers of these additional features, concatenate to the corresponding original embedding of customers or items and modify the fully connected (FC) layers to process the combined feature set and finally at the output of the model, we also add the Final\_score as leverage in the prediction of each customer, the resulted model trained on 1 file achieved the hit rate @10 score of 0.001.
 
-2. **"Hard" particles:**
-  - Thyroglobulin, despite being considered harder, shows strong recall, contributing positively to the overall evaluation.
-  - Beta-galactosidase suffers from low precision, which reduces its F-beta score.
+3. Negative sampling:
+   1. The negative samples have the same sector and shell level with the most frequently bought products of the customer. The score gained from this method is 0.1013.
+   2. The negative samples are the popular products that are in the top 50 most frequently bought products of all customers. The score gained from this method is 0.102.
 
-3. **"Impossible" particle:**  
-   Although listed as impossible, the model is able to detect the beta-amylase particle surprisingly well, with an F-beta score of **0.515** — even better than Apo-ferritin and Beta-galactosidase.
+# Experimental Evaluation
 
-The following visualizations Figure 9 illustrate the model’s performance in detecting particles on real-world data TS 6 4.
-These visualizations help assess the alignment of the model’s predictions with the ground truth and highlight common
-failure cases.
+The experiments done on the test dataset after training, presented in following table, began with LSTM as a starting point with a prediction of quantity which had a low rate. The next implementation included FNN by adjusting and adding negative samples and the feature relevance prediction, which improved the hit rate obtained. At the end of these approaches the maximum number of customers trained inside the FNN was 40000 with their transaction history.
 
-![Visualization of the Detection of the model on data TS 6 4](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-5.png)
+| **Model** | **Training Data** | **Prediction** | **Clients** | **Hit** |
+|-----------|-------------------|----------------|-------------|---------|
+| LSTM      | No Negatives      | Quantity       | 1000        | 0.02    |
+| FNN       | No Negatives      | Quantity       | 3000        | 0.12    |
+| FNN       | Easy Negatives    | Relevance      | 3000        | 0.25    |
+| FNN       | Easy Negatives    | Relevance      | 20000       | 0.18    |
+| FNN       | Hard Negatives    | Relevance      | 40000       | 0.19    |
+| CASER     | Hard Negatives    | ProductId      | 80000       | 0.10    |
 
-We also recognize that particles with high recall often have lower precision, suggesting the model prioritizes identifying true positives but struggles with false positives and "Hard" particles tend to have more challenges, particularly in precision.
+#Conclusion
 
-### YOLO11
+We achieved the highest score of 0.356 using a weighted scoring analysis based on three key factors: Frequency, Recency, and Quantity. This method demonstrated its effectiveness in aligning with customer purchasing behavior. However, as a non-learning, heuristic-based approach, it inherently has a ceiling on its performance and adaptability to more complex patterns.
 
-YOLO11 results can be seen in the following prediction matrix, where each cell contains the proportion of predictions for that combination of true and predicted classes. The most important observations are: 
+In contrast, the results from our experiments with the CASER and Bert-FNN model illustrate iterative improvements through the incorporation of additional features, innovative sampling strategies, and architectural enhancements. These experiments show that deep learning models have significant potential for further development and refinement.
 
-![YOL11 Prediction Matrix](https://wayiok.github.io/academicpages.github.io/images/portfolio/p1-6.png)
-
-* Ribosome: 78% of the ribosome instances were correctly classified. This is a relatively strong performance for this class.
-* apo-ferritin: 62% of predictions are correct, but there is some misclassification (38% in other classes).
-* virus-like-particle: Performs the best, with 90\% correct predictions.
-
-## Failure Analysis
-
-### 3D U-Net
-
-The model occasionally fails to identify true particles, leading to high recall penalties. In case of the "easy" particle apo-ferritin, the model detected only 51 out of 139 true particles, resulting in a recall of 36.69%. This suggests that the model struggles to generalize apo-ferritin features, possibly due to overlapping characteristics with other particles or insufficient training examples in the synthetic dataset which leads to a high miss rate reducing the F-beta score and the final lb\_score of the model.
-
-### YOLO
-
-For YOLO11 case the particle types beta-amylase and beta galactosidase have significant miss-classification rates, with proportions spread across other classes. For the thyroglobulin class, while 47 of the predictions are correct, it is also misclassified as "ribosome" and "virus-like particle." Also, the background of the images are misclassified, which might indicates a challenge for the model to differentiate background noise from actual particle types.
-
-# Conclusion and Future Work
-
-The research focuses on particle detection and classification in Cryo-ET dataset in which we use 2 CNN-based models YOLO11 and 3D U-Net and as a result, YOLO11 outperforms 3D U-Net in most particle type classifications in terms of F-beta score. It is important to mention that the types of proteins with the highest accuracies are due to the radius around the centroid being the largest in ribosome, thyroglobulin, and virus-like particles.
-
-In the case of YOLO11, we can see that it struggles with objects that span multiple slices; however, 3D U-Net captures volumetric context better, especially for irregularly shaped objects. This can be seen in the improvement of the score after the Kaggle submission baseline. YOLO11 could benefit still from adding of space partitioning data structures to better associate detected objects with their true 3D positions based on centroid data. 
-
-In conclusion, the choice between YOLO11 and 3D U-Net would be in favor of YOLO11 who have proved its potential in object detecting task like this but still should depend on the specific characteristics of the dataset and the task's priorities. Future work could explore hybrid approaches that combine YOLO11's speed and precision with the volumetric insights of 3D U-Net, aiming for a more comprehensive solution to cryo-ET particle detection challenges.
+While the data analysis method currently outperforms the deep learning approach, its limitations become apparent when considering scalability and adaptability to evolving customer behaviors. The deep learning model, despite its initial performance gap, shows promise as it can continually improve through fine-tuning, advanced feature integration, and optimization techniques.
