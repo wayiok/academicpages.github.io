@@ -5,9 +5,9 @@ permalink: /publications/
 author_profile: true
 ---
 
-
-  <div class="wordwrap">You can also find my articles on <a href="{{site.author.googlescholar}}">my ResearchGate profile</a>.</div>
-
+{% if site.author.googlescholar %}
+  <div class="wordwrap">You can also find my articles on <a href="{{https://www.researchgate.net/profile/Cesar-Anasco}}">my ResearchGate profile</a>.</div>
+{% endif %}
 
 {% include base_path %}
 

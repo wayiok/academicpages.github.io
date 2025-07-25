@@ -25,8 +25,8 @@ author:
   avatar           : "profile.png"
   name             : "Cesar Anasco"
   pronouns         : # example: "she/her"  
-  bio              : "Master in Machine Learning and Data Mining  \\
-                      Computer Systems Engineer | Technical Consultant "
+  bio              : "| Master in Machine Learning and Data Mining 
+                      | Computer Systems Engineer | Technical Consultant | "
   location         : "Saint-Étienne, France"
   employer         : "Université Jean Monnet"
   uri              : # URL
@@ -35,7 +35,7 @@ author:
   # Academic websites
   academia         : # URL
   arxiv            : # URL - Update with the correct link to your profile
-  googlescholar    : "https://www.researchgate.net/profile/Cesar-Anasco?ev=hdr_xprf"
+  googlescholar    : #"https://www.researchgate.net/profile/Cesar-Anasco?ev=hdr_xprf"
   impactstory      : # URL
   orcid            : "https://orcid.org/0000-0002-0156-3281"
   semantic         : # URL
@@ -48,7 +48,7 @@ author:
   codepen          : # Username
   dribbble         : # Username
   github           : "wayiok"
-  kaggle           : "cesaranasco"  
+  kaggle           : "cesaranasco1995"  
   stackoverflow    : # User number or user number and name (i.e., use "1" or "1/jeff-atwood")    
 
   # Social media
