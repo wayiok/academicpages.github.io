@@ -8,8 +8,7 @@ redirect_from:
 ---
 
 {% include base_path %}
-
-[French Version](https://wayiok.github.io/academicpages.github.io/files/CVF.pdf) | [Spanish Version](https://wayiok.github.io/academicpages.github.io/files/CVS.pdf)
+ [English Version](https://wayiok.github.io/academicpages.github.io/files/CVE.pdf) | [French Version](https://wayiok.github.io/academicpages.github.io/files/CVF.pdf) | [Spanish Version](https://wayiok.github.io/academicpages.github.io/files/CVS.pdf) 
 
 Education
 ======
