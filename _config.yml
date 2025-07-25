@@ -25,8 +25,7 @@ author:
   avatar           : "profile.png"
   name             : "Cesar Anasco"
   pronouns         : # example: "she/her"  
-  bio              : "| Master in Machine Learning and Data Mining 
-                      | Computer Systems Engineer | Technical Consultant | "
+  bio              : "| Master in Machine Learning and Data Mining | Computer Systems Engineer  Technical Consultant | "
   location         : "Saint-Étienne, France"
   employer         : "Université Jean Monnet"
   uri              : # URL
