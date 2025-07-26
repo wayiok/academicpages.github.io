@@ -1,6 +1,6 @@
 ---
 title: "ISIC - Detect Skin Cancer (Work in Progress)"
-excerpt: "Exploratory Data Analysis in Progress. <br/><img src='/images/500x3001.png'>"
+excerpt: "Exploratory Data Analysis in Progress. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p3.png'>"
 collection: portfolio
 ---
 
