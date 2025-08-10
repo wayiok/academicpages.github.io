@@ -1,6 +1,6 @@
 ---
 title: "ISIC - Detect Skin Cancer (Work in Progress)"
-excerpt: "Exploratory Data Analysis in Progress. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p3.png'>"
+excerpt: "This project is part of the ISIC 2024 Challenge, which aims to improve early skin cancer detection through artificial intelligence. It focuses on building a model to classify skin lesions as malignant or benign using smartphone-quality images and 3D Total Body Photography data. The goal is to enhance diagnostic accuracy, support clinical workflows, and prioritize high-risk cases to ultimately reduce mortality rates. Currently, the work is in the exploratory data analysis phase, laying the groundwork for developing an effective detection algorithm. <br/><img src='https://wayiok.github.io/academicpages.github.io/images/portfolio/p3.png'>"
 collection: portfolio
 ---
 
@@ -47,7 +47,7 @@ The goal of this competition is to detect skin cancer using smartphone-quality i
 
 ## Dataset Analysis
 
-The following are examples from the training set. 'Strongly-labelled tiles' are those whose labels were derived through histopathology assessment. 'Weak-labelled tiles' are those who were not biopsied and were considered 'benign' by a doctor.
+The dataset – the SLICE-3D dataset, containing skin lesion image crops extracted from 3D TBP for skin cancer detection – consists of diagnostically labelled images with additional metadata. The following are examples from the training set. 'Strongly-labelled tiles' are those whose labels were derived through histopathology assessment. 'Weak-labelled tiles' are those who were not biopsied and were considered 'benign' by a doctor.
 
 ![Tiles](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-2.png)
 
@@ -112,7 +112,7 @@ Also we can see that mayor malignant lesions are found in the posterior and ante
 Age distribution suggests that trainning data is taken mainly from adults in age range from 35 to 80.
 ![Bar3](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-6.png)
 
-### Target Column
+## Target Column
 
 The target column is a binary classifier that we can use to have relevant rows to use as starting point, and with the use of area, perimeter and ratio we can see in a graphical way the tiles that are being used. 
 
@@ -120,4 +120,31 @@ The target column is a binary classifier that we can use to have relevant rows t
 ![TilesRatio](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-8.png)
 ![TilesRatio](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-9.png)
 
+![ScatterPlot](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-11.png)
 
+
+## Evaluation 
+Target colum is defined by a probability of the image tile being bening or malignant, making this a regression problem. Submissions are evaluated on partial area under the ROC curve (pAUC) above 80% true positive rate (TPR) for binary classification of malignant examples.
+The receiver operating characteristic (ROC) curve illustrates the diagnostic ability of a given binary classifier system as its discrimination threshold is varied. The shaded regions in the following example represents the pAUC of two arbitrary algorithms (Ca and Cb) at an arbitrary minimum TPR:
+
+![TilesRatio](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-10.png)
+
+# Training Image Classification Model 
+
+As a baseline we use a pre-defined convolutional neural network architecture called EfficientNet. The baseline only takes into account the labeled images and still is not using the available metadata. 
+
+![ScatterPlot](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-12.png)
+
+![ScatterPlot](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-13.png)
+
+![ScatterPlot](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-14.png)
+
+Results of inference trained model.
+
+![Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-15.png)
+![Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-16.png)
+![Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-17.png)
+
+Confusion Matrix for top label classification. 
+
+![Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-18.png)
