@@ -4,7 +4,17 @@ excerpt: "This project is part of the ISIC 2024 Challenge, which aims to improve
 collection: portfolio
 ---
 
+The "Skin Cancer Detection woth 3D-TBP" competition encourages participants to develop image-based algorithms to identify histologically confirmed skin cancer cases with single-lesion crops from 3D total body photos (TBP). The image quality resembles close-up smartphone photos, which are regularly submitted for telehealth purposes. The objective is to generate a binary classification algorithm that could be used in settings without access to specialized care and improve triage for early skin cancer detection.
+
 # Introduction
+
+Skin cancer can be deadly if not caught early, but many populations lack specialized dermatologic care. Over the past several years, dermoscopy-based AI algorithms have been shown to benefit clinicians in diagnosing melanoma, basal cell, and squamous cell carcinoma. However, determining which individuals should see a clinician in the first place has great potential impact. Triaging applications have a significant potential to benefit underserved populations and improve early skin cancer detection, the key factor in long-term patient outcomes [ISIC, 2024](https://www.kaggle.com/competitions/isic-2024-challenge). 
+
+Dermatoscope images reveal morphologic features not visible to the naked eye, but these images are typically only captured in dermatology clinics. Algorithms that benefit people in primary care or non-clinical settings must be adept to evaluating lower quality images. This competition leverages 3D TBP to present a novel dataset of every single lesion from thousands of patients across three continents with images resembling cell phone photos.
+
+This competition challenges you to develop AI algorithms that differentiate histologically-confirmed malignant skin lesions from benign lesions on a patient. Your work will help to improve early diagnosis and disease prognosis by extending the benefits of automated skin cancer detection to a broader population and settings.
+
+# Objectives
 
 To advance the field of automated skin cancer detection, the International Skin Imaging Collaboration (ISIC) has launched this competition. This challenge aims to:
 
@@ -12,6 +22,26 @@ To advance the field of automated skin cancer detection, the International Skin 
 - Enhance efficiency in clinical workflows
 - Develop algorithms capable of prioritizing high-risk lesions
 - Ultimately reduce mortality rates associated with skin cancer through early detection
+
+
+# Background 
+
+The three major types of skin cancer are:
+
+- **Basal Cell Carcinoma (BCC)**  is the most common type of skin cancer. As its name indicates, it originates in the basal layer of the epidermis and its appendages. It is characterized by slow growth, local invasiveness and destructiveness, and a low metastatic potential. Individuals with a history of BCC have a higher risk of developing subsequent lesions. Approximately 40% of patients who have had a BCC will develop another lesion within the following five years. Environmental and genetic factors contribute to the development of BCC, with ultraviolet (UV) radiation exposure being the most important factor. Other established risk factors include chronic arsenic exposure, radiation therapy, immunosuppressive therapy, mechanical trauma, recalcitrant scars, and basal cell nevus syndrome [Marcil y Stern, 1987](https://acsjournals.onlinelibrary.wiley.com/doi/10.1002/1097-0142(19870701)60:1%3C118::AID-CNCR2820600122%3E3.0.CO;2-1).
+- **Squamous Cell Carcinoma (SCC)** is the second most common skin cancer after basal cell carcinoma and results from the malignant transformation of keratinocytes in the epidermis and its appendages.  Chronic exposure to ultraviolet (UV) radiation is the most important risk factor for the development of squamous cell carcinoma. UV radiation can induce damage to deoxyribonucleic acid (DNA), leading to the transformation of keratinocytes, as well as alter the skin’s immune response, making it more susceptible to tumor formation.
+  Squamous cell carcinoma is two to three times more common in men and occurs most frequently in patients over 50 years of age. However, over the past three decades, the number of women under 40 years affected by this neoplasm has increased significantly, a trend attributed to excessive use of tanning beds [Boonchai et al., 2000](https://linkinghub.elsevier.com/retrieve/pii/S0190962200906984).
+- **Melanoma** is the most dangerous form of skin cancer. It originates in melanocytes—pigment-producing cells of neuroectodermal origin—located in various parts of the body, including the skin, the iris, and the rectum. These lesions resemble nevi, and some even arise from them.  An increase in UV light exposure in a genetically predisposed population appears to be responsible for the rise in both incidence and mortality from melanoma in recent decades.  Risk factors include: fair skin, history of sunburn, excessive UV light exposure, living near the equator or at high altitudes, multiple nevi and atypical nevi, family history of melanoma, immunosuppression, and age. DNA damage is cumulative over time [Berwick & Wiggins, 2006](https://www.imrpress.com/journal/FBL/11/2/10.2741/1877).
+
+BCC and SCC are very common, with over 5 million estimated cases in the US each year, but relatively unlikely to be lethal. The Skin Cancer Foundation estimates that melanoma, the deadliest form of skin cancer, will be diagnosed over 200,000 times in the US in 2024 and that almost 9,000 people will die from the disease. As with other cancers, early and accurate detection—potentially aided by data science—can make treatment more effective.
+
+![Body 3D](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-1.png)
+
+# Methodology
+
+The goal of this competition is to detect skin cancer using smartphone-quality images of skin lesions. Triaging applications have a significant potential to benefit underserved populations and improve early skin cancer detection, the key factor in long-term patient outcomes.
+
+## Dataset Analysis
 
 The competition provides smartphone-quality images of skins lesions. From these images the goal is to detect the probability of skin cancer.
 
@@ -29,29 +59,11 @@ The ISIC 2024 Challenge focuses on:
 - Providing context for individual lesion assessment
 - Enabling efficient full-body skin examinations
 
-# Background 
-
-The three major types of skin cancer are:
-
-- Basal Cell Carcinoma (BCC)
-- Squamous Cell Carcinoma (SCC)
-- Melanoma
-
-BCC and SCC are very common, with over 5 million estimated cases in the US each year, but relatively unlikely to be lethal. The Skin Cancer Foundation estimates that melanoma, the deadliest form of skin cancer, will be diagnosed over 200,000 times in the US in 2024 and that almost 9,000 people will die from the disease. As with other cancers, early and accurate detection—potentially aided by data science—can make treatment more effective.
-
-![Body 3D](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-1.png)
-
-# Overview 
-
-The goal of this competition is to detect skin cancer using smartphone-quality images of skin lesions. Triaging applications have a significant potential to benefit underserved populations and improve early skin cancer detection, the key factor in long-term patient outcomes.
-
-## Dataset Analysis
-
 The dataset – the SLICE-3D dataset, containing skin lesion image crops extracted from 3D TBP for skin cancer detection – consists of diagnostically labelled images with additional metadata. The following are examples from the training set. 'Strongly-labelled tiles' are those whose labels were derived through histopathology assessment. 'Weak-labelled tiles' are those who were not biopsied and were considered 'benign' by a doctor.
 
 ![Tiles](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-2.png)
 
-Dataset contains the following colums variables. 
+In addition to the classification of images as malignant or benign, the images are accompanied by associated metadata and a pre-established training and testing dataset.
 
 | **Field Name** (train only) | **Description** | **Field Name** (both) | **Description** |
 |-----------------------------|-----------------|-----------------------|-----------------|
@@ -129,7 +141,7 @@ The receiver operating characteristic (ROC) curve illustrates the diagnostic abi
 
 ![TilesRatio](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-10.png)
 
-# Training Image Classification Model 
+# Architecture Implemented
 
 As a baseline we use a pre-defined convolutional neural network architecture called EfficientNet. The baseline only takes into account the labeled images and still is not using the available metadata. 
 
@@ -148,3 +160,5 @@ Results of inference trained model.
 Confusion Matrix for top label classification. 
 
 ![Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p3-18.png)
+
+# Conclusion and Future Work
