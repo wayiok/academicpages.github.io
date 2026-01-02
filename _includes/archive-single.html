@@ -26,6 +26,31 @@
       </div>
     {% endif %}
 
+    {% assign repo_url = post.repo | default: post.repository | default: post.github | default: post.code %}
+
+    {% if include.type != "grid" %}
+      <div style="display:flex; gap:1rem; align-items:flex-start;">
+        <div style="flex:0 0 160px;">
+          {% if teaser %}
+            <a href="{{ base_path }}{{ post.url }}" rel="permalink">
+              <img src=
+                {% if teaser contains "://" %}
+                  "{{ teaser }}"
+                {% else %}
+                  "{{ teaser | prepend: "/images/" | prepend: base_path }}"
+                {% endif %}
+                alt="{{ title | strip_html }} thumbnail" style="width:100%; height:auto; display:block;">
+            </a>
+          {% endif %}
+
+          {% if repo_url %}
+            <a class="btn btn--primary btn--small" href="{{ repo_url }}" target="_blank" rel="noopener" style="margin-top:0.5rem;">Repo</a>
+          {% endif %}
+        </div>
+
+        <div style="flex:1;">
+    {% endif %}
+
     <h2 class="archive__item-title" itemprop="headline">
       {% if post.link %}
         <a href="{{ post.link }}">{{ title }}</a> <a href="{{ base_path }}{{ post.url }}" rel="permalink"><i class="fa fa-link" aria-hidden="true" title="permalink"></i><span class="sr-only">Permalink</span></a>
@@ -33,7 +58,7 @@
         <a href="{{ base_path }}{{ post.url }}" rel="permalink">{{ title }}</a>
       {% endif %}
     </h2>
-    
+
     {% if post.read_time %}
       <p class="page__meta"><i class="fa fa-clock" aria-hidden="true"></i> {% include read-time.html %}</p>
     {% endif %}
@@ -51,7 +76,7 @@
     {% elsif post.excerpt and site.read_more == 'enabled' %}
     <p class="archive__item-excerpt" itemprop="description"><p>{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}<strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></p></p>
     {% endif %}
-    
+
     {% if post.citation and post.paperurl and post.slidesurl and post.bibtexurl %}
       <p>Recommended citation: {{ post.citation }}<br /><a href="{{ post.paperurl }}">Download Paper</a> | <a href="{{ post.slidesurl }}">Download Slides</a> | <a href="{{ post.bibtexurl }}">Download Bibtex</a></p>
     {% elsif post.citation and post.paperurl and post.slidesurl %}
@@ -78,6 +103,11 @@
       <p><a href="{{ post.slidesurl }}">Download Slides</a></p>
     {% elsif post.bibtexurl %}
       <p><a href="{{ post.bibtexurl }}">Download Bibtex</a></p>
+    {% endif %}
+
+    {% if include.type != "grid" %}
+        </div>
+      </div>
     {% endif %}
 
   </article>
