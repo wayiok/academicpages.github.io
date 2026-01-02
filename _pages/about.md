@@ -1,13 +1,11 @@
 ---
 permalink: /
-title: "👋🏼 Hello there, I'm Cesar! "
+title: Welcome
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
-
-#Welcome
 
 I hold a Master’s degree in [Machine Learning and Data Mining](https://mldm.univ-st-etienne.fr/) from Université Jean Monnet in France. During my studies, I also participated in the ERASMUS mobility program at the [University of Freiburg](https://www.tf.uni-freiburg.de/en/study-programs/computer-science/m-sc-computer-science) in Germany.
 
