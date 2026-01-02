@@ -7,12 +7,12 @@ redirect_from:
   - /about.html
 ---
 
+#Welcome
 
-💻 I hold a Master’s degree in Machine Learning and Data Mining from Université Jean Monnet in France. During my studies, I also participated in the ERASMUS mobility at the University of Freiburg in Germany.
+I hold a Master’s degree in [Machine Learning and Data Mining](https://mldm.univ-st-etienne.fr/) from Université Jean Monnet in France. During my studies, I also participated in the ERASMUS mobility program at the [University of Freiburg](https://www.tf.uni-freiburg.de/en/study-programs/computer-science/m-sc-computer-science) in Germany.
 
-🧠 Data Analysis is the first of my passions, and this passion has also expanded to machine learning use. I am particularly interested in the use of machine learning models as a service to benefit society and in building optimized pipelines for generative AI systems.
+Data analysis is one of my main passions, and this interest has expanded into machine learning. I’m particularly interested in using machine learning models as a service to benefit society, and in building optimized pipelines for generative AI systems. I enjoy challenging problems, and I actively participate in Kaggle competitions where I can work on real-world tasks and a wide variety of datasets. Check out my [Portfolio](https://wayiok.github.io/academicpages.github.io/portfolio/) to see what I’m currently working on!
 
-🔧 I currently work as a Technical Consultant at Herzum, a company specialized in DevOps consulting, where I support cloud migrations and contribute to the design of LLM-powered tools and chatbots.
+I worked for three years as a Technical Consultant at [Catworkx](https://catworkx.one/) (formerly Herzum), a company specialized in DevOps consulting, where I supported cloud migrations and contributed to the design of LLM-powered tools and chatbots.
 
-🚀 I enjoy challenging problems, I am actively participating in Kaggle competitions where I can work with real world problems and a wide variety of datasets. Check my portfolio where you can see what I am currently working on!
-
+Prior to this role, I gained experience in cybersecurity. My Bachelor’s thesis was conducted in collaboration with the [Computer Security Incident Response Team (CSIRT-EPN)](https://www.csirt-epn.edu.ec/) at the National Polytechnic School of Ecuador, and I also completed internships in the Information Security department at [Produbanco](https://www.produbanco.com.ec/).

@@ -45,16 +45,16 @@ Work experience
 Skills
 ======
 
-#### 👨‍💻 Programming Languages
+### 👨‍💻 Programming Languages
 - Python, R, SQL, JavaScript, GraphQL
 
-#### 🧰 Frameworks & Libraries
+### 🧰 Frameworks & Libraries
 - TensorFlow, Keras, PyTorch, Pandas, NumPy, Scikit-learn
 
-#### 💡 Technologies & Tools
+### 💡 Technologies & Tools
 - Deep Learning, Computer Vision, Git, Atlassian Suite (Jira, Confluence), Power BI
 
-#### 🌐 Languages
+### 🌐 Languages
 - **English** – C1
 - **Spanish** – Native
 - **French** – A2
