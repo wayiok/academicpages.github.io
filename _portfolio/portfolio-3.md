@@ -3,7 +3,7 @@ title: "ISIC - Detect Skin Cancer (Work in Progress)"
 excerpt: "This project is part of the ISIC 2024 Challenge, which aims to improve early skin cancer detection through artificial intelligence. It focuses on building a model to classify skin lesions as malignant or benign using smartphone-quality images and 3D Total Body Photography data. The goal is to enhance diagnostic accuracy, support clinical workflows, and prioritize high-risk cases to ultimately reduce mortality rates. Currently, the work is in the exploratory data analysis phase, laying the groundwork for developing an effective detection algorithm."
 header:
     teaser: "https://wayiok.github.io/academicpages.github.io/images/portfolio/p3.png"
-repo: "https://github.com/yourname/your-repo"
+repo: "https://colab.research.google.com/drive/1fBIwzcydhh9FF_J_afMNud8eHpGujpoE?usp=sharing"
 collection: portfolio
 ---
 

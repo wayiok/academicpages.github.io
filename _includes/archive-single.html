@@ -44,7 +44,12 @@
           {% endif %}
 
           {% if repo_url %}
-            <a class="btn btn--primary btn--small" href="{{ repo_url }}" target="_blank" rel="noopener" style="margin-top:0.5rem;">Source Code</a>
+            <a href="{{ repo_url }}"
+               target="_blank"
+               rel="noopener"
+               style="display:block; width:100%; text-align:center; margin-top:0.75rem; padding:0.6rem 0.75rem; font-size:0.95rem; font-weight:600; border-radius:8px; background:#2563eb; border:1px solid #2563eb; color:#fff; text-decoration:none; line-height:1.2;">
+              Source Code
+            </a>
           {% endif %}
         </div>
 
