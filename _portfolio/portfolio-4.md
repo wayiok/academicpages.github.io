@@ -35,7 +35,7 @@ Spotify is a service incredibly popular and widely used that provides digital mu
 | Valence | Percentage | Musical positiveness |
 | Year | Time | Year of the registry |
 
-The original dataset gotten from spotify, a music streaming service, has the information of 100 years of songs in a .csv format, specifically from the year 1921 until 2020. Using the python programming language as hour main toolofdataanalysis, thedescriptionofthedatasetcanberesumedasshowed in Table 1.
+The original dataset gotten from spotify, a music streaming service, has the information of 100 years of songs in a .csv format, specifically from the year 1921 until 2020. Using the python programming language as hour main tool of data analysis, the description of the dataset can be resumed as showed in Table 1.
 
 ## Binary Features
 
