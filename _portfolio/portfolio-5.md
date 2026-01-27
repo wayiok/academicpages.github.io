@@ -19,8 +19,11 @@ The goal is to create a simple but solid pipeline you can reuse: extract and tra
 
 # Results
 
-By the end, you have a transcription.txt file for the video and an indexed collection of transcript chunks ready for retrieval. You can pose questions and get answers that cite the most relevant parts of the transcript, which makes the responses traceable and reduces hallucinations. The notebook also incorporates fixes that typically trip people up: it resolves SSL certificate verification issues, handles YouTube 400 errors by updating the downloader or normalizing URLs, installs missing packages for modern LangChain imports, and avoids NumPy/ABI mismatches by pinning a compatible version. With the “medium” Whisper model on an M1, long videos are workable at reasonable speed while maintaining good transcription quality.
+By the end, you have a transcription.txt file for the video and an indexed collection of transcript chunks ready for retrieval. You can pose questions and get answers that cite the most relevant parts of the transcript, which makes the responses traceable and reduces hallucinations. 
+
 
 # Conclusion
+
+![Result](https://wayiok.github.io/academicpages.github.io/images/portfolio/p5-3.png)
 
 You now have a repeatable RAG workflow for YouTube content: fetch, transcribe, chunk, index, retrieve, and answer. It’s lightweight enough to run locally and robust enough to handle common environment and network hurdles. From here, you can tune chunk sizes and top-k retrieval, try faster-whisper or GPU acceleration for speed, and wire the pipeline into a small app or API to turn any long video into a searchable, question-answerable resource.
